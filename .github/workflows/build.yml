@@ -96,16 +96,34 @@ jobs:
       - name: 构建 HAP
         run: hvigorw assembleHap --no-daemon -p product="$PRODUCT" -p buildMode=release
 
+      # 打印包名 / 版本 / API 与签名证书，确认打出来的是 release 且签名用的是刚写回的那套材料
+      - name: 查看 HAP 信息
+        run: publish-apk hap --file entry/build/default/outputs/*/*.hap
+
       # ArkUI-X 跨平台打包 Android：-p platforms=android 只打安卓（ios 那套要 Xcode，runner 上没有）；
       # 安卓侧签名走 Gradle，没配发布密钥时 .arkui-x/android/app/build.gradle 用 debug 签名
       - name: 构建 Android APK
         run: hvigorw assembleApp --no-daemon -p platforms=android -p product="$PRODUCT" -p buildMode=release
 
-      - uses: actions/upload-artifact@v4
+      # 同上，看 Android 侧 APK 的包名 / SDK / ABI 与签名证书（这里通常是 Gradle 的 debug 签名）
+      - name: 查看 APK 信息
+        run: publish-apk apk --file .arkui-x/android/app/build/outputs/apk/*/*.apk
+
+      # 两类产物分开上传，下载时不用从同一个压缩包里挑；if-no-files-found: error 让产物缺失直接失败
+      - name: 上传 HAP 产物
+        uses: actions/upload-artifact@v4
         with:
-          name: hap-apk-${{ github.sha }}
+          name: hap-${{ github.sha }}
           path: |
             entry/build/default/outputs/default/*.hap
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: 上传 APK 产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-${{ github.sha }}
+          path: |
             .arkui-x/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 7
