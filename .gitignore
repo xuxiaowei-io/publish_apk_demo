@@ -22,3 +22,10 @@
 
 # macOS 系统生成的文件
 .DS_Store
+
+.env*
+*.cer
+*.p7b
+*.p12
+material/
+.signing/

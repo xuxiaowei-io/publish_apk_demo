@@ -59,6 +59,25 @@ jobs:
       - name: 安装 ohpm 依赖
         run: ohpm install --all
 
+      # 用 publish-apk 把 secrets 还原成 build-profile.json5 认得的签名材料，镜像里没有这个 CLI
+      - name: 安装 publish-apk
+        run: npm install -g publish-apk
+
+      # 动态生成配置：BASE64 材料先落到 material/ 并校验证书 / Profile / p12 与口令，
+      # 全部通过才改写 build-profile.json5 的 material，写前备份到 .signing/backup/，
+      # 口令只进 material 的密文，不会出现在日志里
+      - name: 生成签名配置
+        env:
+          HARMONY_STORE_FILE_BASE64: ${{ secrets.HARMONY_STORE_FILE_BASE64 }}
+          HARMONY_PROFILE_BASE64: ${{ secrets.HARMONY_PROFILE_BASE64 }}
+          HARMONY_CERTPATH_BASE64: ${{ secrets.HARMONY_CERTPATH_BASE64 }}
+          HARMONY_STORE_PASSWORD: ${{ secrets.HARMONY_STORE_PASSWORD }}
+          HARMONY_KEY_PASSWORD: ${{ secrets.HARMONY_KEY_PASSWORD }}
+          HARMONY_KEY_ALIAS: ${{ secrets.HARMONY_KEY_ALIAS }}
+          # 签名算法，沿用仓库当前签名配置的 SHA256withECDSA
+          HARMONY_SIGN_ALG: ${{ secrets.HARMONY_SIGN_ALG }}
+        run: publish-apk huawei signing-material-env
+
       # 入口任务不传 buildMode 时 hvigor 按 debug 走，发版要的是 release 字节码，所以显式给
       - name: 构建 HAP
         run: hvigorw assembleHap --no-daemon -p product="$PRODUCT" -p buildMode=release
