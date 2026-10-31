@@ -100,7 +100,7 @@ jobs:
       - name: 查看 HAP 信息
         run: publish-apk hap --file entry/build/default/outputs/*/*.hap
 
-      # 两类产物分开上传，下载时不用从同一个压缩包里挑；if-no-files-found: error 让产物缺失直接失败
+      # 各产物分开上传，下载时不用从同一个压缩包里挑；if-no-files-found: error 让产物缺失直接失败
       - name: 上传 HAP 产物
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -111,7 +111,8 @@ jobs:
           retention-days: 7
 
       # ArkUI-X 跨平台打包 Android：-p platforms=android 只打安卓（ios 那套要 Xcode，runner 上没有）；
-      # 安卓侧签名走 Gradle，没配发布密钥时 .arkui-x/android/app/build.gradle 用 debug 签名
+      # 安卓侧签名走 Gradle，没配发布密钥时 .arkui-x/android/app/build.gradle 用 debug 签名。
+      # 同一次 assembleApp 里还会跑 SignApp 产出鸿蒙整包（.app），两个产物都在这步之后
       - name: 构建 Android APK
         run: hvigorw assembleApp --no-daemon -p platforms=android -p product="$PRODUCT" -p buildMode=release
 
@@ -119,11 +120,24 @@ jobs:
       - name: 查看 APK 信息
         run: publish-apk apk --file .arkui-x/android/app/build/outputs/apk/*/*.apk
 
+      # 鸿蒙整包（.app）：AppGallery 上架 / 提交审核用，落在工程根的 build/outputs/<产物名>/ 下
+      - name: 查看 APP 信息
+        run: publish-apk app --file build/outputs/*/*.app
+
       - name: 上传 APK 产物
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apk-${{ github.sha }}
           path: |
             .arkui-x/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: 上传 APP 产物
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: app-${{ github.sha }}
+          path: |
+            build/outputs/*/*.app
           if-no-files-found: error
           retention-days: 7
