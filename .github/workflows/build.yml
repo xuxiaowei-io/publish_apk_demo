@@ -1,0 +1,78 @@
+# GitHub Actions：用打包镜像构建鸿蒙 HAP 与 ArkUI-X 的 Android APK
+#
+# 镜像 xuxiaoweicomcn/hmos-command-arkui-x-android:26.0.0.851-26.0.0.28-36-36.0.0
+# 里是 DevEco command line tools 26.0.0.851 + ArkUI-X 26.0.0.28 + Android SDK 36 / build-tools 36.0.0，
+# 工具链全在镜像里（node / npm / hvigorw / ohpm / java / Android SDK），runner 上不需要装任何东西。
+#
+name: build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LANG: C.UTF-8
+  # Gradle 用户目录放进工作区才能被 actions/cache 缓存（镜像里默认是 ~/.gradle，在挂载卷之外）
+  GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+
+jobs:
+  build:
+    name: HAP + APK
+    runs-on: ubuntu-latest
+    # 首次要整份拉 3.2 GB 的镜像，之后每次 sdk / gradle 依赖下载也要几分钟
+    timeout-minutes: 90
+    container:
+      image: xuxiaoweicomcn/hmos-command-arkui-x-android:26.0.0.851-26.0.0.28-36-36.0.0
+    steps:
+      - uses: actions/checkout@v4
+
+      # 少哪个工具一眼能看出来（镜像本身不带这些检查）
+      - name: 环境自检
+        run: |
+          node -v
+          npm -v
+          hvigorw -v
+          ohpm -v
+          java -version
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .gradle
+            .arkui-x/android/.gradle
+            .arkui-x/android/app/libs
+          key: ${{ runner.os }}-build-${{ hashFiles('hvigor/hvigor-config.json5', 'oh-package-lock.json5', '.arkui-x/android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      # oh_modules 没入库（.gitignore 忽略），干净检出必须先装依赖，否则 ArkTS 编译报 Cannot find module
+      - name: 安装 ohpm 依赖
+        run: ohpm install --all
+
+      # 入口任务不传 buildMode 时 hvigor 按 debug 走，发版要的是 release 字节码，所以显式给
+      - name: 构建 HAP
+        run: hvigorw assembleHap --no-daemon -p product="$PRODUCT" -p buildMode=release
+
+      # ArkUI-X 跨平台打包 Android：-p platforms=android 只打安卓（ios 那套要 Xcode，runner 上没有）；
+      # 安卓侧签名走 Gradle，没配发布密钥时 .arkui-x/android/app/build.gradle 用 debug 签名
+      - name: 构建 Android APK
+        run: hvigorw assembleApp --no-daemon -p platforms=android -p product="$PRODUCT" -p buildMode=release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hap-apk-${{ github.sha }}
+          path: |
+            entry/build/default/outputs/default/*.hap
+            .arkui-x/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
