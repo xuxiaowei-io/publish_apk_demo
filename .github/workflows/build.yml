@@ -63,7 +63,10 @@ jobs:
 
       # 用 publish-apk 把 secrets 还原成 build-profile.json5 认得的签名材料，镜像里没有这个 CLI
       - name: 安装 publish-apk
-        run: npm install -g publish-apk
+        run: |
+          npm install -g publish-apk
+          # 版本写进日志：装的是 npm 上的 latest，出问题时先对照版本再查命令行为差异
+          publish-apk --version
 
       # 调试：打印改动前的 build-profile.json5，与下面"生成后"那份对比，确认 material 是被替换而不是新建。
       # 口令已是密文，但整份配置会进日志，排查完记得删掉这两步
@@ -110,13 +113,29 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      # 安卓发布签名：用 secrets 还原 keystore 并生成 Gradle 读取的 keystore.properties（都不入库）。
+      # 步骤在 .arkui-x/android 下执行：keystore 的落盘路径与配置里 storeFile 的取值同一基准，
+      # 都由 app/build.gradle 的 rootProject.file(...) 解析。
+      # 注意：keystore-config 从 publish-apk 0.0.1-alpha.20 起提供，安装步骤要装到该版本以上
+      - name: 生成安卓签名配置
+        working-directory: .arkui-x/android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # 先按 BASE64 解码出 keystore（0600），再写 keystore.properties（0600）；
+          # 口令 / 别名由后面 Gradle 的 validateSigningRelease 校验
+          publish-apk keystore-config --store-file publish_apk_demo.keystore --out keystore.properties
+
       # ArkUI-X 跨平台打包 Android：-p platforms=android 只打安卓（ios 那套要 Xcode，runner 上没有）；
-      # 安卓侧签名走 Gradle，没配发布密钥时 .arkui-x/android/app/build.gradle 用 debug 签名。
+      # 安卓侧签名走 Gradle，读取上一步生成的 keystore.properties。
       # 同一次 assembleApp 里还会跑 SignApp 产出鸿蒙整包（.app），两个产物都在这步之后
       - name: 构建 Android APK
         run: hvigorw assembleApp --no-daemon -p platforms=android -p product="$PRODUCT" -p buildMode=release
 
-      # 同上，看 Android 侧 APK 的包名 / SDK / ABI 与签名证书（这里通常是 Gradle 的 debug 签名）
+      # 同上，看 Android 侧 APK 的包名 / SDK / ABI 与签名证书（应为 keystore.properties 里的发布证书）
       - name: 查看 APK 信息
         run: publish-apk apk --file .arkui-x/android/app/build/outputs/apk/*/*.apk
 

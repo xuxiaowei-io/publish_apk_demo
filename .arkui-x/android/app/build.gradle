@@ -2,6 +2,21 @@ plugins {
     id 'com.android.application'
 }
 
+// 安卓发布签名：keystore.properties 不入库（见 .arkui-x/android/.gitignore）。
+// 本地用它配置签名，CI 由「生成安卓签名配置」步骤用 secrets 还原出同一份文件。
+// 其中 storeFile 相对 .arkui-x/android（Gradle 根项目）解析，例如 ../../publish_apk_demo.keystore。
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def hasKeystoreProperties = keystorePropertiesFile.exists()
+def keystoreProperties = new Properties()
+if (hasKeystoreProperties) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+    def missingKeys = ['storeFile', 'keyAlias', 'storePassword', 'keyPassword']
+            .findAll { !keystoreProperties.getProperty(it) }
+    if (missingKeys) {
+        throw new GradleException("keystore.properties 缺少配置项: ${missingKeys.join(', ')}")
+    }
+}
+
 android {
     namespace "io.xuxiaowei.publish_apk_demo"
     compileSdkVersion 33
@@ -26,9 +41,28 @@ android {
         }
     }
 
+    signingConfigs {
+        if (hasKeystoreProperties) {
+            release {
+                storeFile = rootProject.file(keystoreProperties.getProperty('storeFile'))
+                keyAlias = keystoreProperties.getProperty('keyAlias')
+                storePassword = keystoreProperties.getProperty('storePassword')
+                keyPassword = keystoreProperties.getProperty('keyPassword')
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            if (hasKeystoreProperties) {
+                signingConfig = signingConfigs.release
+            } else {
+                // 没有签名材料时退回 debug 签名，本地 / fork 仍能打出可安装的包
+                logger.warn('未找到 .arkui-x/android/keystore.properties，release 包改用 debug 签名；' +
+                        '参考 keystore.properties.template 配置发布证书')
+                signingConfig = signingConfigs.debug
+            }
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

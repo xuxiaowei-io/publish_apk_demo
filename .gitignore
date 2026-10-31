@@ -29,3 +29,4 @@
 *.p12
 material/
 .signing/
+*.keystore*
