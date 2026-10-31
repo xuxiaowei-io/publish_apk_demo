@@ -3,13 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		52F10B3598C78DC6B0CC0990 /* libhilog.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 202E9BEE4D5014E83A78B3CF /* libhilog.xcframework */; };
 		89E41E4529F505070004F33E /* EntryEntryAbilityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E41E4329F505070004F33E /* EntryEntryAbilityViewController.m */; };
 		89E41E4629F505CD0004F33E /* libarkui_ios.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF9C1B5D28B9FC3A005DCF58 /* libarkui_ios.xcframework */; };
 		89E41E4729F505CD0004F33E /* libarkui_ios.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DF9C1B5D28B9FC3A005DCF58 /* libarkui_ios.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A5427E13252B16D694526EBF /* libhilog.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 202E9BEE4D5014E83A78B3CF /* libhilog.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DFC5555629D7F36400B63EB3 /* arkui-x in Resources */ = {isa = PBXBuildFile; fileRef = DFC5555529D7F36400B63EB3 /* arkui-x */; };
 		F0AF1AD227D3684F008C55DD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0AF1AD127D3684F008C55DD /* AppDelegate.m */; };
 		F0AF1ADD27D36856008C55DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0AF1ADC27D36856008C55DD /* Assets.xcassets */; };
@@ -24,6 +26,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				A5427E13252B16D694526EBF /* libhilog.xcframework in Embed Frameworks */,
 				89E41E4729F505CD0004F33E /* libarkui_ios.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -32,6 +35,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		202E9BEE4D5014E83A78B3CF /* libhilog.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libhilog.xcframework; path = frameworks/libhilog.xcframework; sourceTree = "<group>"; };
 		89E41E4329F505070004F33E /* EntryEntryAbilityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EntryEntryAbilityViewController.m; sourceTree = "<group>"; };
 		89E41E4429F505070004F33E /* EntryEntryAbilityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntryEntryAbilityViewController.h; sourceTree = "<group>"; };
 		DF9C1B5D28B9FC3A005DCF58 /* libarkui_ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libarkui_ios.xcframework; path = frameworks/libarkui_ios.xcframework; sourceTree = "<group>"; };
@@ -50,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52F10B3598C78DC6B0CC0990 /* libhilog.xcframework in Frameworks */,
 				89E41E4629F505CD0004F33E /* libarkui_ios.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -94,6 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				DF9C1B5D28B9FC3A005DCF58 /* libarkui_ios.xcframework */,
+				202E9BEE4D5014E83A78B3CF /* libhilog.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -309,7 +315,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = JCS8W75JJS;
+				DEVELOPMENT_TEAM = JDYZXW466H;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = app/Info.plist;
@@ -323,9 +329,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.xuxiaowei.publish_apk_demo";
+				PRODUCT_BUNDLE_IDENTIFIER = io.xuxiaowei.publish_apk_demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "no sign";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/frameworks/libarkui_ios.xcframework/ios-arm64/libarkui_ios.framework/Headers/include";
@@ -341,7 +347,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = JCS8W75JJS;
+				DEVELOPMENT_TEAM = JDYZXW466H;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = app/Info.plist;
@@ -355,12 +361,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.xuxiaowei.publish_apk_demo";
+				PRODUCT_BUNDLE_IDENTIFIER = io.xuxiaowei.publish_apk_demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "no sign";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/frameworks/libarkui_ios.xcframework/ios-arm64/libarkui_ios.framework/Headers/include";										
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/frameworks/libarkui_ios.xcframework/ios-arm64/libarkui_ios.framework/Headers/include";
 			};
 			name = Release;
 		};
