@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/xuxiaowei/.ohos/config/default_publish_apk_demo_u45IAZF5eWJvW7wJBgAMMVTjAvtCYudwV_Tt5nNocuQ=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001A5AFAE53F28C2F851B44C68B3CD8AD2A720D983A378E8FEC390C848CC2E826D5B4E92621F90EA",
+          "profile": "/Users/xuxiaowei/.ohos/config/default_publish_apk_demo_u45IAZF5eWJvW7wJBgAMMVTjAvtCYudwV_Tt5nNocuQ=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/xuxiaowei/.ohos/config/default_publish_apk_demo_u45IAZF5eWJvW7wJBgAMMVTjAvtCYudwV_Tt5nNocuQ=.p12",
+          "storePassword": "0000001AF41911982294FB802539A7120C83E0C8818B0F5A2AC09D6AC3AEAECFFA487C59ADC539DC8AF6"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
