@@ -63,6 +63,11 @@ jobs:
       - name: 安装 publish-apk
         run: npm install -g publish-apk
 
+      # 调试：打印改动前的 build-profile.json5，与下面"生成后"那份对比，确认 material 是被替换而不是新建。
+      # 口令已是密文，但整份配置会进日志，排查完记得删掉这两步
+      - name: 查看签名配置（生成前）
+        run: cat build-profile.json5
+
       # 动态生成配置：BASE64 材料先落到 material/ 并校验证书 / Profile / p12 与口令，
       # 全部通过才改写 build-profile.json5 的 material，写前备份到 .signing/backup/，
       # 口令只进 material 的密文，不会出现在日志里
@@ -77,6 +82,11 @@ jobs:
           # 签名算法，沿用仓库当前签名配置的 SHA256withECDSA
           HARMONY_SIGN_ALG: ${{ secrets.HARMONY_SIGN_ALG }}
         run: publish-apk huawei signing-material-env
+
+      # 调试：打印改动后的 build-profile.json5，确认 material 的 storeFile / certpath / profile /
+      # keyAlias / signAlg 与口令密文都已替换，且没把别的字段改坏
+      - name: 查看签名配置（生成后）
+        run: cat build-profile.json5
 
       # 入口任务不传 buildMode 时 hvigor 按 debug 走，发版要的是 release 字节码，所以显式给
       - name: 构建 HAP
