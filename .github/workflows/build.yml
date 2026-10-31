@@ -22,6 +22,8 @@ concurrency:
 
 env:
   LANG: C.UTF-8
+  # 产品名：优先取仓库 / 组织变量 vars.PRODUCT，没有设置时回落到 build-profile.json5 里的 default
+  PRODUCT: ${{ vars.PRODUCT || 'default' }}
   # Gradle 用户目录放进工作区才能被 actions/cache 缓存（镜像里默认是 ~/.gradle，在挂载卷之外）
   GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
 
@@ -79,6 +81,8 @@ jobs:
           HARMONY_STORE_PASSWORD: ${{ secrets.HARMONY_STORE_PASSWORD }}
           HARMONY_KEY_PASSWORD: ${{ secrets.HARMONY_KEY_PASSWORD }}
           HARMONY_KEY_ALIAS: ${{ secrets.HARMONY_KEY_ALIAS }}
+          # 与构建用同一个产品：按 products[].name 找到它挂的 signingConfig，PRODUCT 变了签名配置也跟着变
+          HARMONY_PRODUCT: ${{ env.PRODUCT }}
           # 签名算法，沿用仓库当前签名配置的 SHA256withECDSA
           HARMONY_SIGN_ALG: ${{ secrets.HARMONY_SIGN_ALG }}
         run: publish-apk huawei signing-material-env
