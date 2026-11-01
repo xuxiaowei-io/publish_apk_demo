@@ -1,0 +1,5 @@
+# 推荐：添加必要的文件忽略
+/app.xcodeproj/project.xcworkspace/
+/app.xcodeproj/xcuserdata/
+/arkui-x/
+/frameworks/

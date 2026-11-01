@@ -11,15 +11,6 @@
 **/.test
 /.appanalyzer
 
-# 推荐：添加必要的文件忽略
-/.arkui-x/android/.gradle/
-/.arkui-x/android/app/libs/
-/.arkui-x/android/app/src/main/assets/arkui-x/
-/.arkui-x/ios/app.xcodeproj/project.xcworkspace/
-/.arkui-x/ios/app.xcodeproj/xcuserdata/
-/.arkui-x/ios/arkui-x/
-/.arkui-x/ios/frameworks/
-
 # macOS 系统生成的文件
 .DS_Store
 

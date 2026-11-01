@@ -1,1 +1,6 @@
+# 推荐：添加必要的文件忽略
+/.gradle/
+/app/libs/
+/app/src/main/assets/arkui-x/
+
 keystore.properties*
